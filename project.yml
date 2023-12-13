@@ -5,12 +5,15 @@
 # As such, release build options are disabled.
 # This sample, therefore, only demonstrates running a collection of unit tests.
 
+# https://castrlab.com/2020/08/01/avr-ceedling-cross-platform-development.html
+# https://github.com/saphieron/avr-ceedling-example/blob/master/project_avr-ceedling-example/project.yml
+
 :project:
   :use_exceptions: FALSE
   :use_test_preprocessor: TRUE
   :use_auxiliary_dependencies: TRUE
   :build_root: build
-#  :release_build: TRUE
+  :release_build: TRUE
   :test_file_prefix: test_
   :which_ceedling: gem
   :ceedling_version: 0.31.1
@@ -20,11 +23,13 @@
 #:test_build:
 #  :use_assembly: TRUE
 
-#:release_build:
-#  :output: MyApp.out
+:release_build:
+  :output: tdd_practice.elf
 #  :use_assembly: FALSE
 
 :environment:
+  - :mcu: atmega32
+  - :opt: O0 # optimization level
 
 :extension:
   :executable: .out
@@ -35,6 +40,8 @@
     - -:test/support
   :source:
     - src/**
+  :include:
+    - inc/**
   :support:
     - test/support
   :libraries: []
@@ -75,11 +82,25 @@
     :html_medium_threshold: 75
     :html_high_threshold: 90
 
-#:tools:
 # Ceedling defaults to using gcc for compiling, linking, etc.
 # As [:tools] is blank, gcc will be used (so long as it's in your system path)
 # See documentation to configure a given toolchain for use
-
+:tools:
+  :release_compiler:
+    :executable: avr-gcc
+    :arguments:
+      - -c ${1}
+      - -mmcu=#{ENV['MCU']}
+      - -Wall
+      - -#{ENV['OPT']}
+      - -o ${2}
+  :release_linker:
+    :executable: avr-gcc
+    :arguments:
+      - ${1}
+      - -mmcu=#{ENV['MCU']}
+      - -o ${2}
+      
 # LIBRARIES
 # These libraries are automatically injected into the build process. Those specified as
 # common will be used in all types of builds. Otherwise, libraries can be injected in just
