@@ -1,6 +1,7 @@
 #ifdef TEST
 
 #include "unity.h"
+
 #include "uart.h"
 
 extern uint8_t UBRRH, UBRRL;
