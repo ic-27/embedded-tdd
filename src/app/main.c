@@ -1,6 +1,7 @@
+#include <stdint.h>
 #include "main.h"
 #include "executor.h"
-#include "../hal/uart.h"
+#include "../bsp/util.h"
 #if TEST
 int MAIN(void)
 #else
@@ -11,8 +12,6 @@ int main(void)
   
   for (;;) {
     for (uint32_t i=0; i<50000; ++i);
-    Uart_Tx('a');
-    Uart_Tx('\r');
-    Uart_Tx('\n');
+    Util_Print("Hello World!");
   }
 }

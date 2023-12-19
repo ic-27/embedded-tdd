@@ -4,7 +4,7 @@
 
 #include "main.h"
 #include "mock_executor.h"
-#include "mock_uart.h"
+#include "mock_util.h"
 
 void setUp(void)
 {
