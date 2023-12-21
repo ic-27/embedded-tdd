@@ -29,7 +29,7 @@
 
 :environment:
   - :mcu: atmega32
-  - :opt: O0 # optimization level
+  - :opt: O1 # optimization level
 
 :extension:
   :executable: .out
