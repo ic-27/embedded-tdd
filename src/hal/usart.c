@@ -1,4 +1,4 @@
-#include "uart.h"
+#include "usart.h"
 
 #if TEST
 #include "bit_defs.h"
@@ -17,7 +17,7 @@ uint8_t UDR;
  * 
  * Return: void
  */
-void Uart_Init(void)
+void Usart_Init(void)
 {
   // set baud rate
   UBRRH	 = (uint8_t)(UBRR>>8);
@@ -28,18 +28,14 @@ void Uart_Init(void)
   UCSRC |= (1<<URSEL)|(1<<UCSZ1)|(1<<UCSZ0);
 }
 
+
 /**
- * Uart_Tx() - Send UART data
+ * Usart_Tx() - Send data over USART
  *
  * Return: void
  */
-void Uart_Tx(uint8_t data)
-{
-  while (!( UCSRA & (1<<UDRE)));
+void Usart_Tx(char data) {
+  while (!(UCSRA & (1<<UDRE)));
   UDR = data;
 }
 
-void Uart_Rx(void)
-{
-  
-}

@@ -3,8 +3,7 @@
 
 #include <stdint.h>
 
-void Uart_Init(void);
-void Uart_Tx(uint8_t data);
-void Uart_Rx(void);
+void Usart_Init(void);
+void Usart_Tx(char data);
 
 #endif // UART_H

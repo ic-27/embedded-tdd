@@ -2,7 +2,7 @@
 
 #include "unity.h"
 
-#include "uart.h"
+#include "usart.h"
 
 extern uint8_t UBRRH, UBRRL;
 extern uint8_t UCSRA, UCSRB, UCSRC;
@@ -23,12 +23,12 @@ void tearDown(void)
 {
 }
 
-void test_Uart_Init_Should_InitializeCorrectRegisters(void)
+void test_Usart_Init_Should_InitializeCorrectRegisters(void)
 {
   // setup
   
   // exercise
-  Uart_Init();
+  Usart_Init();
 
   // verify
   TEST_ASSERT_EQUAL_HEX8(0x0,  UBRRH);
@@ -38,14 +38,14 @@ void test_Uart_Init_Should_InitializeCorrectRegisters(void)
   TEST_ASSERT_EQUAL_HEX8(0x86, UCSRC);
 }
 
-void test_Uart_Tx_Should_PlacesDataIntoBufferOnSendWhenDataRegisterEmpty(void)
+void test_Usart_Tx_Should_PlacesDataIntoBufferOnSendWhenDataRegisterEmpty(void)
 {
   // setup
   uint8_t data = 0xBF;
-  Uart_Init();
+  Usart_Init();
 
   // exercise
-  Uart_Tx(data);
+  Usart_Tx(data);
 
   // verify
   TEST_ASSERT_EQUAL_HEX8(0xBF, UDR);
