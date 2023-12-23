@@ -1,8 +1,10 @@
 #include <stdint.h>
 #include "executor.h"
-#include "../hal/uart.h"
+#include "../hal/usart.h"
+#include "../bsp/util.h"
 
 void Executor_Init(void)
 {
-  Uart_Init();
+  Util_Init();
+  Usart_Init();
 }

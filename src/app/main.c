@@ -13,125 +13,114 @@
 #if TEST
 int MAIN(void)
 #else
-int main(void)
+    int main(void)
 #endif
 {
-  Executor_Init();
+    Executor_Init();
 
-  /* // https://cdn.sparkfun.com/assets/8/a/1/5/0/DHT20.pdf */
-  _delay_ms(100); // 100 ms stabilization time for DHT20 sensor (see datasheet)
+    /* // https://cdn.sparkfun.com/assets/8/a/1/5/0/DHT20.pdf */
+    _delay_ms(100); // 100 ms stabilization time for DHT20 sensor (see datasheet)
   
-  Util_Print("DHT20 Debug!");
+    TWBR = 0x8;
   
-  TWBR = 0x8;
+    // start
+    TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xF8) != 0x08) {
+	return 0;
+    }
+
+    // send addr+w
+    TWDR = (0x38) << 1; // only 7 bits!
+    TWCR = (1<<TWINT) | (1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xF8) != 0x18) {
+	return 0;
+    }
+
+    // request data (trigger measurement)
+    TWDR = (0xAC);
+    TWCR = (1<<TWINT) | (1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xF8) != 0x28) {
+	return 0;
+    }
+    TWDR = (0x33);
+    TWCR = (1<<TWINT) | (1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xF8) != 0x28) {
+	return 0;
+    }
+    TWDR = (0x00);
+    TWCR = (1<<TWINT) | (1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xF8) != 0x28) {
+	return 0;
+    }
   
-  // start
-  TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x08) {
-    Util_Print("start err");
-    return 0;
-  }
-
-  // send addr+w
-  TWDR = (0x38) << 1; // only 7 bits!
-  TWCR = (1<<TWINT) | (1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x18) {
-    Util_Print("ack err");
-    return 0;
-  }
-
-  // request data (trigger measurement)
-  TWDR = (0xAC);
-  TWCR = (1<<TWINT) | (1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x28) {
-    Util_Print("ack err");
-    return 0;
-  }
-  TWDR = (0x33);
-  TWCR = (1<<TWINT) | (1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x28) {
-    Util_Print("ack err");
-    return 0;
-  }
-  TWDR = (0x00);
-  TWCR = (1<<TWINT) | (1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x28) {
-    Util_Print("ack err");
-    return 0;
-  }
+    // stop
+    TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
   
-  // stop
-  TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+    _delay_ms(80);
+
+    // start
+    TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xF8) != 0x08) {
+	return 0;
+    }
   
-  _delay_ms(80);
+    // send addr+r
+    TWDR = ((0x38) << 1) | 0x1; // only 7 bits!
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while (!(TWCR & (1<<TWINT)));
+    if ((TWSR & 0xF8) != 0x40) {
+	return 0;
+    }
 
-  // start
-  TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x08) {
-    Util_Print("start err");
-    return 0;
-  }
-  
-  // send addr+r
-  TWDR = ((0x38) << 1) | 0x1; // only 7 bits!
-  TWCR = (1<<TWINT)|(1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x40) {
-    Util_Print("ack err");
-    return 0;
-  }
-
-  // get status
-  TWCR = (1<<TWINT)|(1<<TWEA)|(1<<TWEN);
-  while (!(TWCR & (1<<TWINT)));
-  if ((TWSR & 0xF8) != 0x50) {
-    Util_Print("ack err");
-  }
-  uint8_t status = TWDR;
-  if (!(status & (1<<7))) {
-    Util_Print("measurement complete");
-  }
-
-  // get temp/humi data
-  uint8_t tempHumiData[6] = {0};
-  uint32_t humi;
-  uint32_t temp;
-  char str[100] = {0};
-
-  for (uint8_t i=0; i<6; ++i) {
+    // get status
     TWCR = (1<<TWINT)|(1<<TWEA)|(1<<TWEN);
     while (!(TWCR & (1<<TWINT)));
     if ((TWSR & 0xF8) != 0x50) {
-      Util_Print("ack err");
     }
-    tempHumiData[i] = TWDR;
-  }
-  
-  humi = ((uint32_t)tempHumiData[0]<<12) | (uint32_t)(tempHumiData[1]<<4) | (uint32_t)(tempHumiData[2]&0xF0);
-  humi = ((float)humi/0x100000)*100.0;
+    uint8_t status = TWDR;
+    if (!(status & (1<<7))) {
+    }
 
-  // calc method 1: only works on host computer???
-  //temp = (((uint32_t)(tempHumiData[2]&0xF)<<16) | (uint32_t)(tempHumiData[3]<<8) | (uint32_t)(tempHumiData[4])) ;
+    // get temp/humi data
+    uint8_t tempHumiData[6] = {0};
+    uint32_t humi;
+    uint32_t temp;
 
-  // calc method 2: works on both host gcc and avr-gcc
-  temp = (tempHumiData[2]&0x0F) << 8;
-  temp = (temp+tempHumiData[3]) << 8;
-  temp += tempHumiData[4];
+    for (uint8_t i=0; i<6; ++i) {
+	TWCR = (1<<TWINT)|(1<<TWEA)|(1<<TWEN);
+	while (!(TWCR & (1<<TWINT)));
+	if ((TWSR & 0xF8) != 0x50) {
+	}
+	tempHumiData[i] = TWDR;
+    }
   
-  temp = ((float)temp/0x100000)*200.0 - 50.0;
-  
-  sprintf(str, "temp=%d;humi=%d", (int16_t)temp, (int16_t)humi);
-  Util_Print(str);
-  
-  // stop
-  TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
-  
-  Util_Print("end");
+    humi = ((uint32_t)tempHumiData[0]<<12) | (uint32_t)(tempHumiData[1]<<4) | (uint32_t)(tempHumiData[2]&0xF0);
+    humi = ((float)humi/0x100000)*100.0;
 
+    // calc method 1: only works on host computer???
+    //temp = (((uint32_t)(tempHumiData[2]&0xF)<<16) | (uint32_t)(tempHumiData[3]<<8) | (uint32_t)(tempHumiData[4])) 
+
+    // calc method 2: works on both host gcc and avr-gcc
+    temp = (tempHumiData[2]&0x0F) << 8;
+    temp = (temp+tempHumiData[3]) << 8;
+    temp += tempHumiData[4];
+  
+    temp = ((float)temp/0x100000)*200.0 - 50.0;
+
+    printf("%ld %ld\n", temp, humi);
+    
+    // stop
+    TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+    
+    while (1) {
+	
+    }
 }
+
+
