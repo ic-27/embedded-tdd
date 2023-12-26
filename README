@@ -1,0 +1,8 @@
+This is a repository for practicing work with Ceedling, a build system intended
+for TDD on embedded devices. The project is simply having a DHT20 temp/humi
+sensor print out temp/humi values once per second. The project is split into
+different layers: app, bsp, driver, and hal for ease of testing while also
+promoting modularity.
+
+This repository was built using Docker. Please see the embedded-tdd-docker
+repository.
