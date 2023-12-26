@@ -268,6 +268,52 @@ void test_I2C_ReadData_HandlesNack(void)
     TEST_ASSERT_EQUAL_HEX8(0xEA, data);// make sure data unchanged on nack
 }
 
+void test_I2C_ReadDataLast_HandlesNackAndReadsData(void)
+{
+    // setup
+    uint8_t ret = 0;
+    uint8_t data;
+    uint8_t dummyData = 0xAE;
+    I2C_Init();
+
+    TWSR = TW_START;
+    ret = I2C_Start();
+    TEST_ASSERT_EQUAL_HEX8(0, ret);
+
+    TWSR = TW_MR_DATA_NACK;
+    TWDR = dummyData;
+
+    // exercise
+    ret = I2C_ReadDataLast(&data);
+    
+    // verify
+    TEST_ASSERT_EQUAL_HEX8(0, ret);
+    TEST_ASSERT_EQUAL_HEX8(dummyData, data);
+}
+
+void test_I2C_ReadDataLast_HandlesStatusOtherThanNack(void)
+{
+    // setup
+    uint8_t ret = 0;
+    uint8_t data = 0xEA;
+    uint8_t dummyData = 0xAE;
+    I2C_Init();
+
+    TWSR = TW_START;
+    ret = I2C_Start();
+    TEST_ASSERT_EQUAL_HEX8(0, ret);
+
+    TWSR = TW_BUS_ERROR;
+    TWDR = dummyData;
+
+    // exercise
+    ret = I2C_ReadDataLast(&data);
+    
+    // verify
+    TEST_ASSERT_EQUAL_HEX8(-1, ret);
+    TEST_ASSERT_EQUAL_HEX8(0xEA, data);// make sure data unchanged on nack
+}
+
 void test_I2C_StopTransmission_WritesToCorrectRegisters(void)
 {
     // setup

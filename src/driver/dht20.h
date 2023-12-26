@@ -39,7 +39,4 @@ uint8_t DHT20_Read(void);
 int32_t DHT20_GetTemperature(void);
 int32_t DHT20_GetHumidity(void);
 
-int32_t calcTemperature(uint8_t *i2cData);
-int32_t calcHumidity(uint8_t *i2cData);
-
 #endif // DHT20_H

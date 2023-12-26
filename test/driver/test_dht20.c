@@ -6,6 +6,9 @@
 #include "mock_i2c.h"
 #include "mock_common.h"
 
+STATIC int32_t calcTemperature(uint8_t *i2cData);
+STATIC int32_t calcHumidity(uint8_t *i2cData);
+
 void setUp(void)
 {
 }

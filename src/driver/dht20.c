@@ -8,6 +8,8 @@
 #define DHT20_BUSY (1<<7) // status 
 
 static int32_t temp, humi;
+STATIC int32_t calcTemperature(uint8_t *i2cData);
+STATIC int32_t calcHumidity(uint8_t *i2cData);
 
 void DHT20_Init(void)
 {
@@ -74,7 +76,7 @@ int32_t DHT20_GetHumidity(void)
     return humi;
 }
 
-int32_t calcTemperature(uint8_t *i2cData)
+STATIC int32_t calcTemperature(uint8_t *i2cData)
 {
     int32_t temp;
 
@@ -91,13 +93,13 @@ int32_t calcTemperature(uint8_t *i2cData)
     return temp;
 }
 
-int32_t calcHumidity(uint8_t *i2cData)
+STATIC int32_t calcHumidity(uint8_t *i2cData)
 {
     int32_t humi;
     
     humi = (((uint32_t)i2cData[0]<<12) | (uint32_t)(i2cData[1]<<4) |
 	    (uint32_t)(i2cData[2]&0xF0));
-    humi = ((float)humi/0x100000)*100.0*100.0;
+    humi = ((float)humi/0x100000)*100.0 * 100.0;
     
     return humi;
 }

@@ -134,7 +134,6 @@ uint8_t I2C_ReadDataLast(uint8_t *data)
     return 0;
 }
 
-
 /**
  * I2C_StopTransmission() - Send a stop transmission
  *

@@ -8,6 +8,11 @@
 void _delay_ms(int32_t ms);
 #endif
 
+#if !TEST
+#define STATIC static
+#else
+#define STATIC
+#endif
 
 
 #endif
