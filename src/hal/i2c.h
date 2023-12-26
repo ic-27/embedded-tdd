@@ -11,4 +11,5 @@ uint8_t I2C_ReadAddr(uint8_t readAddr);
 uint8_t I2C_ReadData(uint8_t *data);
 void I2C_StopTransmission(void);
 
+uint8_t I2C_ReadDataLast(uint8_t *data);
 #endif // I2C_H

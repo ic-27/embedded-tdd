@@ -118,6 +118,24 @@ uint8_t I2C_ReadData(uint8_t *data)
 }
 
 /**
+ * I2C_ReadDataLast() - Read last byte from I2C slave
+ * @data: pointer to var to read data into
+ *
+ * Return: 0 on success, else -1
+ */
+uint8_t I2C_ReadDataLast(uint8_t *data) 
+{
+    TWCR = (1<<TWINT)|(1<<TWEN);
+    while (I2C_CHK_JOB_DONE());
+    if ((TWSR & 0xF8) != TW_MR_DATA_NACK) {
+	return -1;
+    }
+    *data = TWDR;
+    return 0;
+}
+
+
+/**
  * I2C_StopTransmission() - Send a stop transmission
  *
  * Return: void
@@ -125,4 +143,5 @@ uint8_t I2C_ReadData(uint8_t *data)
 void I2C_StopTransmission(void)
 {
     TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+    while(!(TWCR & (1<<TWSTO)));
 }
